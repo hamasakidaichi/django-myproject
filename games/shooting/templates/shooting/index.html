@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>シューティングゲーム</title>
+<style>
+body {
+    margin:0;
+    background:#000; /* 黒背景 */
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:white;
+    font-family: Arial, sans-serif;
+    overflow:hidden;
+}
+#top-buttons {
+    width:100%;
+    display:flex;
+    justify-content:center;
+    padding:10px 0;
+}
+button {
+    background:#4CAF50;
+    border:none;
+    color:white;
+    padding:10px 20px;
+    border-radius:5px;
+    font-size:16px;
+    cursor:pointer;
+    margin:0 5px;
+}
+canvas {
+    background:#000; /* 黒背景 */
+    display:block;
+    margin-top:20px;
+}
+#score {
+    font-size:20px;
+    margin-top:15px;
+}
+#message {
+    font-size:24px;
+    margin-top:10px;
+    color:#FF5555;
+    font-weight:bold;
+}
+#instructions {
+    font-size:16px;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div id="top-buttons">
+    <button onclick="location.href='/'">ホームへ</button>
+</div>
+
+<h1>シューティングゲーム</h1>
+<div id="score">スコア: 0</div>
+<canvas id="gameCanvas" width="480" height="320"></canvas>
+<div id="message"></div>
+<div id="instructions">操作: ← / → キーで移動、スペースキーで発射</div>
+<button id="startBtn">ゲーム開始</button>
+<button id="retryBtn" style="display:none;">もう一度</button>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// プレイヤー設定
+let playerWidth = 60, playerHeight = 90; // 画像に合わせて調整
+let playerX = canvas.width/2 - playerWidth/2;
+let rightPressed = false;
+let leftPressed = false;
+
+// プレイヤー画像（透過 PNG を使用）
+const playerImg = new Image();
+playerImg.src = "{% static 'shooting/player.png' %}";
+
+playerImg.onload = () => {
+    draw();  // 画像読み込み完了後にゲームループ開始
+};
+
+// 弾
+let bullets = [];
+let bulletSpeed = 5;
+
+// 敵
+let enemies = [];
+let enemyWidth = 40, enemyHeight = 20;
+let enemySpeed = 1;
+let enemySpawnInterval = 2000;
+
+// ゲーム状態
+let score = 0;
+let gameOver = false;
+let gameStarted = false;
+
+// キー操作
+document.addEventListener("keydown", e => {
+    if(e.key==="Right"||e.key==="ArrowRight") rightPressed=true;
+    if(e.key==="Left"||e.key==="ArrowLeft") leftPressed=true;
+    if(e.key===" " && gameStarted && !gameOver) shootBullet();
+});
+document.addEventListener("keyup", e => {
+    if(e.key==="Right"||e.key==="ArrowRight") rightPressed=false;
+    if(e.key==="Left"||e.key==="ArrowLeft") leftPressed=false;
+});
+
+// 弾発射
+function shootBullet(){
+    bullets.push({x:playerX + playerWidth/2 - 2.5, y:canvas.height-playerHeight-10, width:5, height:10});
+}
+
+// 敵生成
+function spawnEnemy(){
+    if(!gameStarted || gameOver) return;
+    let x = Math.random() * (canvas.width - enemyWidth);
+    enemies.push({x:x, y:0, width:enemyWidth, height:enemyHeight});
+    setTimeout(spawnEnemy, enemySpawnInterval);
+}
+
+// 描画
+function drawPlayer(){
+    ctx.drawImage(playerImg, playerX, canvas.height-playerHeight, playerWidth, playerHeight);
+}
+
+function drawBullets(){
+    ctx.fillStyle="#FF0";
+    bullets.forEach(b => ctx.fillRect(b.x,b.y,b.width,b.height));
+}
+
+function drawEnemies(){
+    ctx.fillStyle="#F00";
+    enemies.forEach(e => ctx.fillRect(e.x,e.y,e.width,e.height));
+}
+
+// 衝突判定
+function collisionDetection(){
+    bullets.forEach((b,bi) => {
+        enemies.forEach((e,ei) => {
+            if(b.x < e.x+e.width && b.x+b.width > e.x && b.y < e.y+e.height && b.y+b.height > e.y){
+                bullets.splice(bi,1);
+                enemies.splice(ei,1);
+                score += 10;
+                document.getElementById("score").innerText = "スコア: " + score;
+            }
+        });
+    });
+}
+
+// ゲームループ
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(gameStarted && !gameOver){
+        // プレイヤー移動
+        if(rightPressed && playerX<canvas.width-playerWidth) playerX+=5;
+        if(leftPressed && playerX>0) playerX-=5;
+
+        // 弾移動
+        bullets.forEach((b,i)=>{
+            b.y -= bulletSpeed;
+            if(b.y+b.height<0) bullets.splice(i,1);
+        });
+
+        // 敵移動
+        enemies.forEach((e,i)=>{
+            e.y += enemySpeed;
+            if(e.y>canvas.height) {
+                gameOver = true;
+                document.getElementById("message").innerText = "ゲームオーバー";
+                document.getElementById("retryBtn").style.display = "inline-block";
+                document.getElementById("startBtn").style.display = "none";
+            }
+        });
+
+        collisionDetection();
+    }
+
+    drawPlayer();
+    drawBullets();
+    drawEnemies();
+
+    requestAnimationFrame(draw);
+}
+
+// 初期化
+function resetGame(){
+    score = 0;
+    document.getElementById("score").innerText="スコア: 0";
+    gameOver=false;
+    gameStarted=false;
+    bullets=[];
+    enemies=[];
+    playerX = canvas.width/2 - playerWidth/2;
+    document.getElementById("message").innerText="";
+    document.getElementById("retryBtn").style.display="none";
+    document.getElementById("startBtn").style.display="inline-block";
+}
+
+// ボタン
+document.getElementById("startBtn").addEventListener("click", () => {
+    gameStarted = true;
+    spawnEnemy();
+});
+
+document.getElementById("retryBtn").addEventListener("click", () => {
+    resetGame();
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>テトリス</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f0f0;
+      font-family: sans-serif;
+    }
+    #game-container {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    canvas {
+      border: 2px solid black;
+      background-color: #222;
+    }
+    #info {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      font-size: 16px;
+    }
+    #nextCanvas {
+      border: 1px solid black;
+      background-color: #333;
+      width: 80px;
+      height: 80px;
+    }
+    #controls {
+      margin-top: 10px;
+    }
+    button {
+      margin: 3px;
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+    #startBtn {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div>
+      <button id="startBtn">スタート</button>
+      <canvas id="gameCanvas" width="200" height="400"></canvas>
+      <div id="controls">
+        <p>操作説明:</p>
+        <p>← 左移動 / → 右移動</p>
+        <p>↓ 下移動 / ↑ 回転</p>
+        <p>スペース: 一気に下へ</p>
+      </div>
+    </div>
+    <div id="info">
+      <div>スコア: <span id="score">0</span></div>
+      <div>レベル: <span id="level">1</span></div>
+      <div>次のブロック:</div>
+      <canvas id="nextCanvas" width="80" height="80"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const nextCanvas = document.getElementById("nextCanvas");
+    const nextCtx = nextCanvas.getContext("2d");
+
+    const ROWS = 20;
+    const COLS = 10;
+    const BLOCK_SIZE = 20;
+
+    let board = Array.from({ length: ROWS }, () => Array(COLS).fill("black"));
+
+    const COLORS = ["cyan","blue","orange","yellow","green","purple","red"];
+    const SHAPES = [
+      [[1,1,1,1]],
+      [[1,0,0],[1,1,1]],
+      [[0,0,1],[1,1,1]],
+      [[1,1],[1,1]],
+      [[0,1,1],[1,1,0]],
+      [[0,1,0],[1,1,1]],
+      [[1,1,0],[0,1,1]]
+    ];
+
+    let current, next, score = 0, level = 1;
+    let dropStart, gameOver = false, gameStarted = false;
+
+    class Piece {
+      constructor(shape, color) {
+        this.shape = shape;
+        this.color = color;
+        this.x = 3;
+        this.y = -2;
+      }
+      draw(ctx, offsetX=0, offsetY=0, size=BLOCK_SIZE) {
+        ctx.fillStyle = this.color;
+        for (let r = 0; r < this.shape.length; r++) {
+          for (let c = 0; c < this.shape[r].length; c++) {
+            if (this.shape[r][c]) {
+              ctx.fillRect((this.x+c+offsetX)*size, (this.y+r+offsetY)*size, size, size);
+              ctx.strokeRect((this.x+c+offsetX)*size, (this.y+r+offsetY)*size, size, size);
+            }
+          }
+        }
+      }
+    }
+
+    function randomPiece() {
+      const idx = Math.floor(Math.random() * SHAPES.length);
+      return new Piece(SHAPES[idx], COLORS[idx]);
+    }
+
+    function drawBoard() {
+      for (let r=0;r<ROWS;r++){
+        for (let c=0;c<COLS;c++){
+          ctx.fillStyle = board[r][c];
+          ctx.fillRect(c*BLOCK_SIZE, r*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+          ctx.strokeRect(c*BLOCK_SIZE, r*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        }
+      }
+    }
+
+    function drawNextPiece() {
+      nextCtx.clearRect(0,0,nextCanvas.width,nextCanvas.height);
+      const size = 15; // ← 小さめサイズ
+      const offsetX = Math.floor((nextCanvas.width/size - next.shape[0].length)/2);
+      const offsetY = Math.floor((nextCanvas.height/size - next.shape.length)/2);
+      next.shape.forEach((row,r)=>{
+        row.forEach((val,c)=>{
+          if(val){
+            nextCtx.fillStyle = next.color;
+            nextCtx.fillRect((c+offsetX)*size, (r+offsetY)*size, size, size);
+            nextCtx.strokeRect((c+offsetX)*size, (r+offsetY)*size, size, size);
+          }
+        });
+      });
+    }
+
+    function collision(x,y,shape){
+      for(let r=0;r<shape.length;r++){
+        for(let c=0;c<shape[r].length;c++){
+          if(shape[r][c]){
+            let newX=current.x+c+x;
+            let newY=current.y+r+y;
+            if(newX<0||newX>=COLS||newY>=ROWS) return true;
+            if(newY>=0 && board[newY][newX]!=="black") return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function lockPiece(){
+      for(let r=0;r<current.shape.length;r++){
+        for(let c=0;c<current.shape[r].length;c++){
+          if(current.shape[r][c]){
+            let newY=current.y+r;
+            if(newY<0){ gameOver=true; alert("ゲームオーバー！"); return; }
+            board[newY][current.x+c]=current.color;
+          }
+        }
+      }
+      clearLines();
+      current = next;
+      next = randomPiece();
+      drawNextPiece();
+    }
+
+    function clearLines(){
+      for(let r=ROWS-1;r>=0;r--){
+        if(board[r].every(cell=>cell!=="black")){
+          board.splice(r,1);
+          board.unshift(Array(COLS).fill("black"));
+          score += 100;
+          if(score % 500 === 0){ level++; }
+          document.getElementById("score").textContent=score;
+          document.getElementById("level").textContent=level;
+        }
+      }
+    }
+
+    function drop(){
+      let now=Date.now();
+      if(now-dropStart>1000/level){
+        if(!collision(0,1,current.shape)){ current.y++; }
+        else{ lockPiece(); }
+        dropStart=now;
+      }
+      render();
+      if(!gameOver){ requestAnimationFrame(drop); }
+    }
+
+    function render(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      drawBoard();
+      current.draw(ctx);
+    }
+
+    document.addEventListener("keydown",e=>{
+      if(!gameStarted) return;
+      if(e.key==="ArrowLeft"&&!collision(-1,0,current.shape)) current.x--;
+      if(e.key==="ArrowRight"&&!collision(1,0,current.shape)) current.x++;
+      if(e.key==="ArrowDown"&&!collision(0,1,current.shape)) current.y++;
+      if(e.key==="ArrowUp"){
+        let rotated=current.shape[0].map((_,i)=>current.shape.map(r=>r[i])).reverse();
+        if(!collision(0,0,rotated)) current.shape=rotated;
+      }
+      if(e.key===" "){
+        while(!collision(0,1,current.shape)) current.y++;
+        lockPiece();
+      }
+      render();
+    });
+
+    document.getElementById("startBtn").addEventListener("click",()=>{
+      if(gameStarted) return;
+      gameStarted=true;
+      board=Array.from({length:ROWS},()=>Array(COLS).fill("black"));
+      score=0;level=1;
+      document.getElementById("score").textContent=score;
+      document.getElementById("level").textContent=level;
+      current=randomPiece();
+      next=randomPiece();
+      drawNextPiece();
+      dropStart=Date.now();
+      drop();
+    });
+  </script>
+</body>
+</html>

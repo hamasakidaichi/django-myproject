@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickRush</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        #startButton, #clickButton {
+            font-size: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 20px;
+        }
+        #timer {
+            font-size: 30px;
+            color: red;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div style="margin-bottom: 15px;">
+    <a href="{% url 'home' %}" 
+       style="text-decoration:none; font-size:18px; font-weight:bold; color:white; 
+              background-color:#4c7aaf; padding:8px 16px; border-radius:5px;">
+       ホームへ
+    </a>
+</div>
+    <h1>Click連打ゲーム</h1>
+    <p>クリックボタンを10秒間でできるだけ押してください！</p>
+    <button id="startButton">ゲームスタート</button>
+    <div id="gameArea" style="display: none;">
+        <button id="clickButton">クリック！</button>
+        <p id="timer">10</p>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        let startButton = document.getElementById('startButton');
+        let clickButton = document.getElementById('clickButton');
+        let timerDisplay = document.getElementById('timer');
+        let resultDisplay = document.getElementById('result');
+        let gameArea = document.getElementById('gameArea');
+        let clicks = 0;
+        let timer;
+        let timeLeft = 10;
+
+        // ゲーム開始
+        startButton.addEventListener('click', function() {
+            startButton.style.display = 'none';
+            gameArea.style.display = 'block';
+            clicks = 0;
+            timeLeft = 10;
+            timerDisplay.textContent = timeLeft;
+
+            // タイマー開始
+            timer = setInterval(function() {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    clickButton.disabled = true;
+                    resultDisplay.textContent = `ゲーム終了！ あなたのスコアは ${clicks} 回です。`;
+                }
+            }, 1000);
+        });
+
+        // クリックボタンが押されたとき
+        clickButton.addEventListener('click', function() {
+            clicks++;
+        });
+    </script>
+</body>
+</html>

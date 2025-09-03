@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHubX - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .game-buttons {
+            display: flex;
+            flex-wrap: wrap;             /* 画面幅に収めて折り返す */
+            gap: 20px;
+            justify-content: center;     /* 横方向中央揃え */
+            align-items: center;
+            max-width: 90vw;             /* 横幅制限 */
+        }
+
+        .game-button {
+            flex: 1 1 150px;             /* 最小150px、自動伸縮 */
+            max-width: 150px;
+            aspect-ratio: 1 / 1;         /* 正方形固定 */
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .game-button:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 500px) {
+            .game-button {
+                flex: 1 1 100px;
+                max-width: 100px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-buttons">
+        <div class="game-button" onclick="window.location.href='/ClickRush/'">Click連打</div>
+        <div class="game-button" onclick="window.location.href='/othello/'">オセロ</div>
+        <div class="game-button" onclick="window.location.href='/blockbreaker/'">ブロック崩し</div>
+        <div class="game-button" onclick="window.location.href='/shooting/'">シューティングゲーム</div>
+        <div class="game-button" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
+        <div class="game-button" onclick="window.location.href='/tetris/'">テトリス</div>
+        <!-- 新しいゲームを追加 -->
+    </div>
+
+</body>
+</html>

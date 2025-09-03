@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ヒット＆ブロー（3桁）</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background: #f0f4f8;
+        }
+        h1 { color: #2c3e50; }
+        input {
+            font-size: 18px;
+            padding: 10px;
+            width: 120px;
+            text-align: center;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            transition: background 0.3s;
+        }
+        button:hover { background: #2980b9; }
+        .result { margin-top: 20px; font-size: 18px; }
+        .history { margin-top: 30px; text-align: left; display: inline-block; }
+        .history h2 { font-size: 20px; margin-bottom: 10px; }
+        .history ul { list-style: none; padding: 0; }
+        .history li {
+            padding: 5px;
+            background: white;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<div style="margin-bottom: 15px;">
+    <a href="{% url 'home' %}" 
+       style="text-decoration:none; font-size:18px; font-weight:bold; color:white; 
+              background-color:#4c7aaf; padding:8px 16px; border-radius:5px;">
+       ホームへ
+    </a>
+</div>
+<body>
+    <h1>ヒット＆ブロー（3桁）</h1>
+    <p>3桁の異なる数字を当ててください！</p>
+
+    <div>
+        <input type="text" id="guessInput" maxlength="3" placeholder="例: 123">
+        <button onclick="checkGuess()">判定</button>
+        <button onclick="restartGame()">リスタート</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="history">
+        <h2>履歴</h2>
+        <ul id="historyList"></ul>
+    </div>
+
+    <script>
+        let answer = [];
+        let attempts = 0;
+        const DIGIT = 3; // 桁数
+
+        function generateAnswer() {
+            const digits = Array.from({length: 10}, (_, i) => i);
+            answer = [];
+            for (let i = 0; i < DIGIT; i++) {
+                const index = Math.floor(Math.random() * digits.length);
+                answer.push(digits.splice(index, 1)[0]);
+            }
+            console.log("答え: " + answer.join("")); // デバッグ用
+        }
+
+        function checkGuess() {
+            const input = document.getElementById("guessInput").value;
+            if (!new RegExp(`^\\d{${DIGIT}}$`).test(input)) {
+                alert(`${DIGIT}桁の数字を入力してください！`);
+                return;
+            }
+
+            const guess = input.split("").map(Number);
+            if (new Set(guess).size !== DIGIT) {
+                alert("数字は重複しないようにしてください！");
+                return;
+            }
+
+            attempts++;
+            let hit = 0, blow = 0;
+
+            for (let i = 0; i < DIGIT; i++) {
+                if (guess[i] === answer[i]) {
+                    hit++;
+                } else if (answer.includes(guess[i])) {
+                    blow++;
+                }
+            }
+
+            const resultText = `${input} → ${hit} Hit, ${blow} Blow`;
+            document.getElementById("result").textContent = resultText;
+
+            const historyList = document.getElementById("historyList");
+            const li = document.createElement("li");
+            li.textContent = resultText;
+            historyList.prepend(li);
+
+            if (hit === DIGIT) {
+                alert(`正解！ ${attempts}回目で当てました！`);
+            }
+
+            document.getElementById("guessInput").value = "";
+        }
+
+        function restartGame() {
+            generateAnswer();
+            attempts = 0;
+            document.getElementById("result").textContent = "";
+            document.getElementById("historyList").innerHTML = "";
+            document.getElementById("guessInput").value = "";
+        }
+
+        // 初回起動時
+        generateAnswer();
+    </script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>オセロ</title>
+<style>
+    body {
+        background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        margin: 0;
+        padding-top: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+    }
+
+    #playerInfo, #turnInfo {
+        margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    table {
+        border-collapse: collapse;
+        background-color: green;
+    }
+
+    td {
+        width: 50px;
+        height: 50px;
+        border: 2px solid black;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .black {
+        background-color: black;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        margin: auto;
+    }
+
+    .white {
+        background-color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        margin: auto;
+    }
+
+    #result {
+        margin-top: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<div style="margin-bottom: 15px;">
+    <a href="{% url 'home' %}" 
+       style="text-decoration:none; font-size:18px; font-weight:bold; color:white; 
+              background-color:#4c7aaf; padding:8px 16px; border-radius:5px;">
+       ホームへ
+    </a>
+</div>
+
+<h1>オセロ (対CPU)</h1>
+<div id="playerInfo"></div>
+<div id="turnInfo"></div>
+<table id="board"></table>
+<div id="result"></div>
+
+<script>
+const SIZE = 8;
+let board = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+
+// 初期配置
+board[3][3] = 'white';
+board[3][4] = 'black';
+board[4][3] = 'black';
+board[4][4] = 'white';
+
+// プレイヤー色ランダム
+let playerColor = Math.random() < 0.5 ? 'black' : 'white';
+let cpuColor = playerColor === 'black' ? 'white' : 'black';
+let currentPlayer = 'black';
+
+const boardElement = document.getElementById("board");
+const resultElement = document.getElementById("result");
+const playerInfoElement = document.getElementById("playerInfo");
+const turnInfoElement = document.getElementById("turnInfo");
+
+// プレイヤー色表示
+playerInfoElement.textContent = `あなた: ${playerColor === 'black' ? "黒" : "白"}　CPU: ${cpuColor === 'black' ? "黒" : "白"}`;
+
+function renderBoard() {
+    boardElement.innerHTML = "";
+    for (let i = 0; i < SIZE; i++) {
+        const row = document.createElement("tr");
+        for (let j = 0; j < SIZE; j++) {
+            const cell = document.createElement("td");
+            cell.dataset.row = i;
+            cell.dataset.col = j;
+            if (board[i][j]) {
+                const piece = document.createElement("div");
+                piece.className = board[i][j];
+                cell.appendChild(piece);
+            }
+            cell.addEventListener("click", handleClick);
+            row.appendChild(cell);
+        }
+        boardElement.appendChild(row);
+    }
+    turnInfoElement.textContent = `現在の番: ${currentPlayer === playerColor ? "あなた" : "CPU"} (${currentPlayer})`;
+}
+
+function isValidMove(row, col, color) {
+    if (board[row][col] !== null) return false;
+    const directions = [
+        [1,0], [-1,0], [0,1], [0,-1],
+        [1,1], [1,-1], [-1,1], [-1,-1]
+    ];
+    for (let [dx, dy] of directions) {
+        let x = row + dx, y = col + dy;
+        let hasOpponent = false;
+        while (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
+            if (board[x][y] === null) break;
+            if (board[x][y] !== color) hasOpponent = true;
+            else { if (hasOpponent) return true; else break; }
+            x += dx; y += dy;
+        }
+    }
+    return false;
+}
+
+function getValidMoves(color) {
+    const moves = [];
+    for (let i = 0; i < SIZE; i++) {
+        for (let j = 0; j < SIZE; j++) {
+            if (isValidMove(i, j, color)) moves.push([i, j]);
+        }
+    }
+    return moves;
+}
+
+function makeMove(row, col, color) {
+    if (!isValidMove(row, col, color)) return false;
+    board[row][col] = color;
+    const directions = [
+        [1,0], [-1,0], [0,1], [0,-1],
+        [1,1], [1,-1], [-1,1], [-1,-1]
+    ];
+    for (let [dx, dy] of directions) {
+        let x = row + dx, y = col + dy;
+        let toFlip = [];
+        while (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
+            if (board[x][y] === null) break;
+            if (board[x][y] !== color) toFlip.push([x,y]);
+            else { if (toFlip.length>0){toFlip.forEach(([fx,fy])=>board[fx][fy]=color);} break; }
+            x += dx; y += dy;
+        }
+    }
+    checkGameEnd();
+    return true;
+}
+
+function handleClick(event) {
+    if (currentPlayer !== playerColor) return;
+    const row = parseInt(event.target.dataset.row);
+    const col = parseInt(event.target.dataset.col);
+    if (makeMove(row, col, playerColor)) {
+        switchTurn();
+        renderBoard();
+        if (currentPlayer === cpuColor) setTimeout(cpuMove, 500);
+    }
+}
+
+function cpuMove() {
+    const moves = getValidMoves(cpuColor);
+    if (moves.length === 0) { switchTurn(); renderBoard(); return; }
+    const [row, col] = moves[Math.floor(Math.random() * moves.length)];
+    makeMove(row, col, cpuColor);
+    switchTurn();
+    renderBoard();
+}
+
+function switchTurn() {
+    currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+    if (!hasMoves(currentPlayer)) {
+        alert(`${currentPlayer} は置ける場所がないのでスキップ`);
+        currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+        if (!hasMoves(currentPlayer)) {
+            endGame();
+        }
+    }
+}
+
+function hasMoves(color) {
+    return getValidMoves(color).length > 0;
+}
+
+function checkGameEnd() {
+    if (!hasMoves('black') && !hasMoves('white')) endGame();
+}
+
+function endGame() {
+    let blackCount = 0, whiteCount = 0;
+    for (let i=0;i<SIZE;i++){
+        for(let j=0;j<SIZE;j++){
+            if(board[i][j]==='black') blackCount++;
+            if(board[i][j]==='white') whiteCount++;
+        }
+    }
+    if (blackCount > whiteCount) resultElement.textContent = "黒の勝ち！";
+    else if (whiteCount > blackCount) resultElement.textContent = "白の勝ち！";
+    else resultElement.textContent = `引き分け！`;
+}
+
+renderBoard();
+if (playerColor === 'white') setTimeout(cpuMove, 500);
+</script>
+</body>
+</html>

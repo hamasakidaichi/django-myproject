@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ブロック崩し</title>
+<style>
+body {
+    margin:0;
+    background:#222;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    height:100vh;
+    color:white;
+    font-family: Arial, sans-serif;
+    overflow: hidden; /* 画面全体のスクロールや揺れ防止 */
+}
+#top-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* 真ん中上 */
+    padding: 10px 0;
+}
+button {
+    background:#4CAF50;
+    border:none;
+    color:white;
+    padding:10px 20px;
+    border-radius:5px;
+    font-size:16px;
+    cursor:pointer;
+}
+canvas {
+    background:#111;
+    display:block;
+    margin-top:20px;
+}
+#score {
+    font-size:20px;
+    margin-top:15px;
+}
+#message {
+    font-size:24px;
+    margin-top:10px;
+    color:#FF5555;
+    font-weight:bold;
+}
+#instructions {
+    font-size:16px;
+    margin-top:10px;
+    color:#FFFFFF;
+}
+</style>
+</head>
+<body>
+
+<div id="top-buttons">
+    <button onclick="location.href='/'">ホームへ</button>
+</div>
+
+<h1>ブロック崩し</h1>
+<div id="score">スコア: 0</div>
+<canvas id="gameCanvas" width="480" height="320"></canvas>
+<div id="message"></div>
+<div id="instructions">パドル操作: ←キー / →キー</div>
+<button id="startBtn">ゲーム開始</button>
+<button id="retryBtn" style="display:none;">もう一度</button>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// ボール
+let x = canvas.width/2;
+let y = canvas.height-30;
+let dx = 3;
+let dy = -3;
+let ballRadius = 10;
+
+// パドル
+let paddleHeight = 10;
+let paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth)/2;
+let rightPressed = false;
+let leftPressed = false;
+
+// ブロック
+let brickRowCount = 3;
+let brickColumnCount = 5;
+let brickWidth = 75;
+let brickHeight = 20;
+let brickPadding = 10;
+let brickOffsetTop = 30;
+let brickOffsetLeft = 30;
+let bricks = [];
+
+let score = 0;
+let gameOver = false;
+let gameStarted = false;
+
+document.addEventListener("keydown", keyDownHandler);
+document.addEventListener("keyup", keyUpHandler);
+
+function keyDownHandler(e){
+    if(e.key==="Right"||e.key==="ArrowRight") rightPressed=true;
+    if(e.key==="Left"||e.key==="ArrowLeft") leftPressed=true;
+}
+function keyUpHandler(e){
+    if(e.key==="Right"||e.key==="ArrowRight") rightPressed=false;
+    if(e.key==="Left"||e.key==="ArrowLeft") leftPressed=false;
+}
+
+function initBricks(){
+    bricks = [];
+    for(let c=0; c<brickColumnCount; c++){
+        bricks[c] = [];
+        for(let r=0; r<brickRowCount; r++){
+            bricks[c][r] = { x:0, y:0, status:1 };
+        }
+    }
+}
+
+function collisionDetection(){
+    let allDestroyed = true;
+    for(let c=0; c<brickColumnCount; c++){
+        for(let r=0; r<brickRowCount; r++){
+            let b = bricks[c][r];
+            if(b.status===1){
+                allDestroyed = false;
+                if(x>b.x && x<b.x+brickWidth && y>b.y && y<b.y+brickHeight){
+                    dy = -dy;
+                    b.status=0;
+                    score += 10;
+                    document.getElementById("score").innerText = "スコア: " + score;
+                }
+            }
+        }
+    }
+    if(allDestroyed && !gameOver){
+        document.getElementById("message").innerText = "ゲームクリア！";
+        gameOver = true;
+        document.getElementById("retryBtn").style.display = "inline-block";
+        document.getElementById("startBtn").style.display = "none";
+    }
+}
+
+function drawBall(){
+    ctx.beginPath();
+    ctx.arc(x,y,ballRadius,0,Math.PI*2);
+    ctx.fillStyle="#00FF00";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawPaddle(){
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle="#00FFFF";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawBricks(){
+    for(let c=0;c<brickColumnCount;c++){
+        for(let r=0;r<brickRowCount;r++){
+            if(bricks[c][r].status===1){
+                let brickX = c*(brickWidth+brickPadding)+brickOffsetLeft;
+                let brickY = r*(brickHeight+brickPadding)+brickOffsetTop;
+                bricks[c][r].x=brickX;
+                bricks[c][r].y=brickY;
+                ctx.beginPath();
+                ctx.rect(brickX,brickY,brickWidth,brickHeight);
+                ctx.fillStyle="#FF0000";
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+    }
+}
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawBricks();
+    drawPaddle();
+
+    if(gameStarted && !gameOver){
+        drawBall();
+        collisionDetection();
+
+        if(x+dx>canvas.width-ballRadius || x+dx<ballRadius) dx=-dx;
+        if(y+dy<ballRadius) dy=-dy;
+        else if(y+dy>canvas.height-ballRadius){
+            if(x>paddleX && x<paddleX+paddleWidth) dy=-dy;
+            else {
+                document.getElementById("message").innerText = "ゲームオーバー";
+                gameOver = true;
+                document.getElementById("retryBtn").style.display = "inline-block";
+                document.getElementById("startBtn").style.display = "none";
+            }
+        }
+
+        x += dx;
+        y += dy;
+    }
+
+    // パドル移動のみ canvas 内で制御（画面全体は動かさない）
+    if(rightPressed && paddleX < canvas.width-paddleWidth) paddleX += 5;
+    if(leftPressed && paddleX > 0) paddleX -= 5;
+
+    requestAnimationFrame(draw);
+}
+
+// 初期化
+function resetGame(){
+    score = 0;
+    document.getElementById("score").innerText = "スコア: " + score;
+    document.getElementById("message").innerText = "";
+    gameOver = false;
+    gameStarted = false;
+    x = canvas.width/2;
+    y = canvas.height-30;
+    dx = 3;
+    dy = -3;
+    paddleX = (canvas.width - paddleWidth)/2;
+    document.getElementById("retryBtn").style.display = "none";
+    document.getElementById("startBtn").style.display = "inline-block";
+    initBricks();
+}
+
+// ボタン設定
+document.getElementById("startBtn").addEventListener("click", () => {
+    gameStarted = true;
+});
+
+document.getElementById("retryBtn").addEventListener("click", () => {
+    resetGame();
+});
+
+initBricks();
+draw();
+</script>
+
+</body>
+</html>
