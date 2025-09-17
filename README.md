@@ -22,3 +22,12 @@ games/${game_name}/templates/${game_name}/index.html
 
 7. GameHubX に新ゲームを追加。ほかにならって、下記ファイルを修正
 GameHubX/templates/home.html
+
+
+〇本番リリース
+amazonのS3にログイン
+ssh -i django_web.pem ubuntu@ec2-3-27-62-63.ap-southeast-2.compute.amazonaws.com
+git clone https://github.com/hamasakidaichi/django-myproject.git
+.\venv_mysite\Scripts\activate
+cd django-myproject
+python manage.py runserver 0.0.0.0:8000

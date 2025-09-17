@@ -6,6 +6,7 @@ from games.blockbreaker.views import blockbreaker_home
 from games.shooting.views import shooting_home
 from games.hitandblow.views import hitandblow_home
 from games.tetris.views import tetris_home
+from games.game_2048.views import game_2048_home
 
 urlpatterns = [
     path('', views.home, name='home'),  # home ビューを URL に紐づけ
@@ -15,6 +16,7 @@ urlpatterns = [
     path('shooting/', shooting_home, name='shooting_home'),
     path('hitandblow/', hitandblow_home, name='hitandblow_home'),
     path('tetris/', tetris_home, name='tetris_home'),
+    path('game_2048/', game_2048_home, name='game_2048_home'),
     #path('game2/', include('game2.urls')),  # ゲーム2へのリンク
     # ここに新しいゲームのURLを追加していく
 ]

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,24 +11,41 @@
             margin: 0;
             background-color: #f0f0f0;
             display: flex;
-            justify-content: center;
+            justify-content: center; 
             align-items: center;
             height: 100vh;
         }
 
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
         .game-buttons {
             display: flex;
-            flex-wrap: wrap;             /* 画面幅に収めて折り返す */
+            flex-wrap: wrap;
             gap: 20px;
-            justify-content: center;     /* 横方向中央揃え */
-            align-items: center;
-            max-width: 90vw;             /* 横幅制限 */
+            justify-content: flex-start;
+            align-items: flex-start;
+            align-content: flex-start;
+            max-width: 60vw;
+
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            height: 90vh;
+            box-sizing: border-box;
+            overflow-y: auto;
         }
 
         .game-button {
-            flex: 1 1 150px;             /* 最小150px、自動伸縮 */
+            flex: 1 1 150px;
             max-width: 150px;
-            aspect-ratio: 1 / 1;         /* 正方形固定 */
+            aspect-ratio: 1 / 1;
             background-color: #3498db;
             color: white;
             font-size: 18px;
@@ -52,19 +70,129 @@
                 font-size: 14px;
             }
         }
+
+        /* サイドバー */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 25%;
+            height: 100vh;
+            background-color: #fafafa;
+            border-left: 2px solid #ccc;
+            display: flex;
+            flex-direction: column; 
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #333;
+            text-align: center;
+        }
+
+        .sidebar p {
+            font-size: 14px;
+            margin: 0 0 15px 0;
+            color: #555;
+            text-align: center;
+        }
+
+        .slideshow {
+            position: relative;
+            width: 100%;
+        }
+
+        .slideshow img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: none;
+        }
+
+        .slideshow img.active {
+            display: block;
+        }
+
+        /* 左右矢印ボタン */
+        .arrow-btn {
+            cursor: pointer;
+            font-size: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        .arrow-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="game-buttons">
-        <div class="game-button" onclick="window.location.href='/ClickRush/'">Click連打</div>
-        <div class="game-button" onclick="window.location.href='/othello/'">オセロ</div>
-        <div class="game-button" onclick="window.location.href='/blockbreaker/'">ブロック崩し</div>
-        <div class="game-button" onclick="window.location.href='/shooting/'">シューティングゲーム</div>
-        <div class="game-button" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
-        <div class="game-button" onclick="window.location.href='/tetris/'">テトリス</div>
-        <!-- 新しいゲームを追加 -->
+    <div class="container">
+        <!-- 中央のゲームボタン -->
+        <div class="game-buttons">
+            <div class="game-button" onclick="window.location.href='/ClickRush/'">Click連打</div>
+            <div class="game-button" onclick="window.location.href='/othello/'">オセロ</div>
+            <div class="game-button" onclick="window.location.href='/blockbreaker/'">ブロック崩し</div>
+            <div class="game-button" onclick="window.location.href='/shooting/'">シューティングゲーム</div>
+            <div class="game-button" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
+            <div class="game-button" onclick="window.location.href='/tetris/'">テトリス</div>
+            <div class="game-button" onclick="window.location.href='/game_2048/'">2048</div>
+        </div>
     </div>
+
+    <!-- 右側のスライドショー -->
+    <div class="sidebar">
+        <h2>AIが考えたエンジニアあるある</h2>
+        <p>画像もAI生成です！</p>
+
+        <div class="arrow-container">
+            <button class="arrow-btn" id="prev">&lt;</button>
+            <button class="arrow-btn" id="next">&gt;</button>
+        </div>
+
+        <div class="slideshow">
+            <img src="{% static 'images/4koma1.png' %}" alt="4コマ漫画1" class="active" />
+            <img src="{% static 'images/4koma2.png' %}" alt="4コマ漫画2">
+            <img src="{% static 'images/4koma3.png' %}" alt="4コマ漫画3">
+        </div>
+    </div>
+
+    <script>
+        // スライドショー処理（手動切り替え）
+        const slides = document.querySelectorAll('.slideshow img');
+        let currentIndex = 0;
+
+        const showSlide = (index) => {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+        }
+
+        document.getElementById('prev').addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            showSlide(currentIndex);
+        });
+
+        document.getElementById('next').addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % slides.length;
+            showSlide(currentIndex);
+        });
+    </script>
 
 </body>
 </html>

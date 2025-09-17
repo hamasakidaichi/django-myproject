@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'games.shooting',
     'games.hitandblow',
     'games.tetris',
+    'games.game_2048',
 ]
 
 MIDDLEWARE = [
