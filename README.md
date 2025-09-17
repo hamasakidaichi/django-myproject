@@ -25,9 +25,16 @@ GameHubX/templates/home.html
 
 
 〇本番リリース
-amazonのS3にログイン
+・ローカル(コマンドプロンプト)
+git add .
+git commit -m "XXX"
+git push origin main
+
+・amazonのS3にログイン(Ubuntu)
 ssh -i django_web.pem ubuntu@ec2-3-27-62-63.ap-southeast-2.compute.amazonaws.com
+cd django-myproject
 git clone https://github.com/hamasakidaichi/django-myproject.git
-.\venv_mysite\Scripts\activate
+cd ~
+source myenv/bin/activate
 cd django-myproject
 python manage.py runserver 0.0.0.0:8000
