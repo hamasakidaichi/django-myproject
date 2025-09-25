@@ -174,17 +174,19 @@
       current = next;
       next = randomPiece();
       drawNextPiece();
+      render();
     }
 
     function clearLines(){
       for(let r=ROWS-1;r>=0;r--){
-        if(board[r].every(cell=>cell!=="black")){
-          board.splice(r,1);
-          board.unshift(Array(COLS).fill("black"));
+        if(board[r].every(cell => cell !== "black")){
+          board.splice(r, 1);                        // 行を削除
+          board.unshift(Array(COLS).fill("black"));  // 上に黒い行を追加
           score += 100;
           if(score % 500 === 0){ level++; }
-          document.getElementById("score").textContent=score;
-          document.getElementById("level").textContent=level;
+          document.getElementById("score").textContent = score;
+          document.getElementById("level").textContent = level;
+          r++; // ← 削除したので、同じ行インデックスを再チェック
         }
       }
     }

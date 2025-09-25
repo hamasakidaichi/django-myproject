@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'games.hitandblow',
     'games.tetris',
     'games.game_2048',
+    'games.typing_game',
+    'games.aim_training',
 ]
 
 MIDDLEWARE = [

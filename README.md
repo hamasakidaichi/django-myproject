@@ -7,7 +7,7 @@ python ../manage.py startapp ${game_name}
 myproject/settings.py の INSTALLED_APPS リストに新しいゲームを追加
 
 3. app.pyでディレクトリ構成の変更
-games/tetris/apps.py の name の先頭に games を追加（例： name = 'games.${game_name}'）
+games/${game_name}/apps.py の name の先頭に games を追加（例： name = 'games.${game_name}'）
 
 4. 親ゲームに新規ゲームを追加
 GameHubX の urls.py に新しいゲームを追加する(他のゲーム参照)
@@ -37,4 +37,5 @@ git clone https://github.com/hamasakidaichi/django-myproject.git
 cd ~
 source myenv/bin/activate
 cd django-myproject
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8000 --noreload
+※noreload は開発用で、変更を自動で再起動して読み込む用なので、不要。

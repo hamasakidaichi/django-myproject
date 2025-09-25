@@ -2,197 +2,282 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameHubX - Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center; 
-            align-items: center;
-            height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHubX - Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+      height: 100vh;
+    }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-        }
+    /* 左側のゲームボタンエリア */
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      overflow: hidden;
+    }
 
-        .game-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: flex-start;
-            align-items: flex-start;
-            align-content: flex-start;
-            max-width: 60vw;
+    .game-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+      align-items: flex-start;
+      align-content: flex-start;
+      max-width: 60vw;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      height: 90vh;
+      box-sizing: border-box;
+      overflow-y: auto;
+      position: relative;
+    }
 
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            height: 90vh;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
+    .game-button {
+      flex: 1 1 150px;
+      max-width: 150px;
+      aspect-ratio: 1 / 1;
+      background-color: #3498db;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
 
-        .game-button {
-            flex: 1 1 150px;
-            max-width: 150px;
-            aspect-ratio: 1 / 1;
-            background-color: #3498db;
-            color: white;
-            font-size: 18px;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
+    .game-button:hover {
+      transform: scale(1.1);
+    }
 
-        .game-button:hover {
-            transform: scale(1.1);
-        }
+    @media (max-width: 500px) {
+      .game-button {
+        flex: 1 1 100px;
+        max-width: 100px;
+        font-size: 14px;
+      }
+    }
 
-        @media (max-width: 500px) {
-            .game-button {
-                flex: 1 1 100px;
-                max-width: 100px;
-                font-size: 14px;
-            }
-        }
+    /* 右側サイドバー */
+    .sidebar {
+      width: 400px;
+      background-color: #fafafa;
+      border-left: 2px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 10px;
+      box-sizing: border-box;
+      height: 100vh;
+      overflow-y: auto;
+    }
 
-        /* サイドバー */
-        .sidebar {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 25%;
-            height: 100vh;
-            background-color: #fafafa;
-            border-left: 2px solid #ccc;
-            display: flex;
-            flex-direction: column; 
-            justify-content: flex-start;
-            align-items: center;
-            padding: 20px 10px;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
+    .sidebar h2, .sidebar p {
+      text-align: center;
+      margin: 6px 0;
+    }
 
-        .sidebar h2 {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 10px 0;
-            color: #333;
-            text-align: center;
-        }
+    /* スライドショー */
+    .slideshow {
+      width: 100%;
+      flex: 1;
+      max-height: 45%;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .sidebar p {
-            font-size: 14px;
-            margin: 0 0 15px 0;
-            color: #555;
-            text-align: center;
-        }
+    .slideshow img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
-        .slideshow {
-            position: relative;
-            width: 100%;
-        }
+    .slideshow img.active {
+      display: block;
+    }
 
-        .slideshow img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            display: none;
-        }
+    /* 矢印 */
+    .arrow-container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 6px;
+    }
 
-        .slideshow img.active {
-            display: block;
-        }
+    /* インジケーター */
+    .slide-indicator {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
 
-        /* 左右矢印ボタン */
-        .arrow-btn {
-            cursor: pointer;
-            font-size: 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 5px;
-        }
+    /* 動画エリア */
+    .video-container {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .arrow-container {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-    </style>
+    /* 動画説明テキスト */
+.video-description {
+  margin: 0 0 6px 0;   /* 下に余白を少し */
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;  /* 中央揃え */
+}
+
+
+    .video-container video {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      background: #000;
+    }
+
+    /* 流れる文字 */
+    .shinkansen-top-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      height: 30px;
+      display: flex;
+      align-items: center;
+    }
+
+    .shinkansen-top-text {
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: bold;
+      font-size: 16px;
+      color: #e74c3c;
+      animation: scroll-top 10s linear infinite;
+    }
+
+    @keyframes scroll-top {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .game-buttons-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-top: 35px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- 中央のゲームボタン -->
-        <div class="game-buttons">
-            <div class="game-button" onclick="window.location.href='/ClickRush/'">Click連打</div>
-            <div class="game-button" onclick="window.location.href='/othello/'">オセロ</div>
-            <div class="game-button" onclick="window.location.href='/blockbreaker/'">ブロック崩し</div>
-            <div class="game-button" onclick="window.location.href='/shooting/'">シューティングゲーム</div>
-            <div class="game-button" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
-            <div class="game-button" onclick="window.location.href='/tetris/'">テトリス</div>
-            <div class="game-button" onclick="window.location.href='/game_2048/'">2048</div>
+  <!-- 左側ゲームボタン -->
+  <div class="container">
+    <div class="game-buttons">
+    <h1>AI駆動開発に挑戦！</h1>
+      <div class="shinkansen-top-wrapper">
+        <div class="shinkansen-top-text">
+          新しく「タイピング」ゲームを追加！
         </div>
+      </div>
+      <div class="game-buttons-inner">
+        <div class="game-button" onclick="window.location.href='/ClickRush/'">Click連打</div>
+        <div class="game-button" onclick="window.location.href='/othello/'">オセロ</div>
+        <div class="game-button" onclick="window.location.href='/blockbreaker/'">ブロック崩し</div>
+        <div class="game-button" onclick="window.location.href='/shooting/'">シューティングゲーム</div>
+        <div class="game-button" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
+        <div class="game-button" onclick="window.location.href='/tetris/'">テトリス</div>
+        <div class="game-button" onclick="window.location.href='/game_2048/'">2048</div>
+        <div class="game-button" onclick="window.location.href='/typing_game/'">タイピング</div>
+        <div class="game-button" onclick="window.location.href='/aim_training/'">エイム練習</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右側サイドバー -->
+  <div class="sidebar">
+    <h2>AIが考えたエンジニアあるある</h2>
+    <p>画像もAI生成です！</p>
+
+    <div class="arrow-container">
+      <button id="prev">&lt;</button>
+      <button id="next">&gt;</button>
     </div>
 
-    <!-- 右側のスライドショー -->
-    <div class="sidebar">
-        <h2>AIが考えたエンジニアあるある</h2>
-        <p>画像もAI生成です！</p>
+    <div class="slideshow">
+      <img src="{% static 'images/4koma1.png' %}" class="active" />
+      <img src="{% static 'images/4koma2.png' %}">
+      <img src="{% static 'images/4koma3.png' %}">
 
-        <div class="arrow-container">
-            <button class="arrow-btn" id="prev">&lt;</button>
-            <button class="arrow-btn" id="next">&gt;</button>
-        </div>
-
-        <div class="slideshow">
-            <img src="{% static 'images/4koma1.png' %}" alt="4コマ漫画1" class="active" />
-            <img src="{% static 'images/4koma2.png' %}" alt="4コマ漫画2">
-            <img src="{% static 'images/4koma3.png' %}" alt="4コマ漫画3">
-        </div>
+      <div class="slide-indicator" id="slide-indicator">1 / 3</div>
     </div>
 
-    <script>
-        // スライドショー処理（手動切り替え）
-        const slides = document.querySelectorAll('.slideshow img');
-        let currentIndex = 0;
+    <div class="video-container">
+        <!-- 
+      <p class="video-description">AIユーチューバーなどが流行っていますが、動画のクオリティもどんどん向上しています。いつか映画なんかもつくれちゃいそうですね。</p>
+       -->
+      <video controls>
+        <source src="{% static 'videos/ai_create.mp4' %}" type="video/mp4">
+        お使いのブラウザは video タグをサポートしていません。
+      </video>
+    </div>
+  </div>
 
-        const showSlide = (index) => {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-            });
-        }
+  <script>
+// スライドショー処理（手動切り替え）
+const slides = document.querySelectorAll('.slideshow img');
+let currentIndex = 0;
+const indicator = document.getElementById('slide-indicator');
 
-        document.getElementById('prev').addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-            showSlide(currentIndex);
-        });
+const showSlide = (index) => {
+    slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+    });
+    indicator.textContent = `${index + 1} / ${slides.length}`;
+}
 
-        document.getElementById('next').addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % slides.length;
-            showSlide(currentIndex);
-        });
-    </script>
+// 初期表示
+showSlide(currentIndex);
+
+document.getElementById('prev').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    showSlide(currentIndex);
+});
+
+document.getElementById('next').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    showSlide(currentIndex);
+});
+
+  </script>
 
 </body>
 </html>

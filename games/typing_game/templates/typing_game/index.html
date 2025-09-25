@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Typing Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f8f9fa;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #instruction {
+            font-size: 18px;
+            margin: 20px;
+            color: #555;
+        }
+        #keys {
+            font-size: 40px;
+            margin: 30px auto;
+            width: 80%;
+            word-wrap: break-word;
+            line-height: 1.8;
+            min-height: 120px;
+        }
+        .current {
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .done {
+            color: #28a745;
+        }
+        #scoreboard {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #result {
+            font-size: 26px;
+            margin-top: 30px;
+            font-weight: bold;
+        }
+        #restart-message {
+            display: inline-block;
+            color: white;
+            background-color: orange;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>タイピングゲーム！</h1>
+    <div id="instruction">
+        スペースキーを押すとゲーム開始！<br>
+        30文字のランダムなアルファベットが表示されます。<br>
+        左から順にタイプしてください。<br><br>
+        大体9~10秒かな！？
+    </div>
+
+    <div id="keys"></div>
+    <div id="scoreboard">
+        <div>ミス数: <span id="misses">0</span></div>
+        <div>経過時間: <span id="time">0.00</span> 秒</div>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        let keys = [];
+        let currentIndex = 0;
+        let misses = 0;
+        let startTime = null;
+        let timerInterval = null;
+        let gameStarted = false;
+
+        function getRandomKey() {
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+        }
+
+        function generateKeys(count = 30) {
+            keys = [];
+            for (let i = 0; i < count; i++) {
+                keys.push(getRandomKey());
+            }
+        }
+
+        function renderKeys() {
+            let html = "";
+            keys.forEach((k, idx) => {
+                if (idx < currentIndex) {
+                    html += `<span class="done">${k}</span> `;
+                } else if (idx === currentIndex) {
+                    html += `<span class="current">${k}</span> `;
+                } else {
+                    html += `<span>${k}</span> `;
+                }
+            });
+            document.getElementById("keys").innerHTML = html;
+        }
+
+        function startGame() {
+            generateKeys(30);
+            currentIndex = 0;
+            misses = 0;
+            gameStarted = true;
+            document.getElementById("misses").textContent = misses;
+            document.getElementById("time").textContent = "0.00";
+            document.getElementById("result").innerHTML = "";
+            renderKeys();
+
+            startTime = performance.now();
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTime, 50);
+        }
+
+        function updateTime() {
+            if (!startTime) return;
+            let elapsed = (performance.now() - startTime) / 1000;
+            document.getElementById("time").textContent = elapsed.toFixed(2);
+        }
+
+        document.addEventListener("keydown", function(event) {
+            if (!gameStarted && event.code === "Space") {
+                // スペースキーでスタート
+                event.preventDefault(); // ページスクロール防止
+                startGame();
+                return;
+            }
+
+            if (!gameStarted || currentIndex >= keys.length) return;
+
+            let expected = keys[currentIndex];
+            if (event.key.toUpperCase() === expected) {
+                currentIndex++;
+                renderKeys();
+
+                if (currentIndex === keys.length) {
+                    clearInterval(timerInterval);
+                    let totalTime = (performance.now() - startTime) / 1000;
+                    // 経過時間と終了時間を揃える
+                    document.getElementById("time").textContent = totalTime.toFixed(2);
+
+                    // 終了メッセージ + 再スタート案内
+                    document.getElementById("result").innerHTML =
+                        `<div>終了！タイム: ${totalTime.toFixed(2)} 秒 / ミス: ${misses}</div>` +
+                        `<div id="restart-message">スペースキーを押すと再スタート！</div>`;
+
+                    gameStarted = false; // 次回スペースで再スタート可能
+                }
+            } else if (/^[a-zA-Z]$/.test(event.key)) {
+                // アルファベット以外はミスにカウントしない
+                misses++;
+                document.getElementById("misses").textContent = misses;
+            }
+        });
+    </script>
+</body>
+</html>

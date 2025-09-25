@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Aim Trainer</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f0f0f0;
+        overflow: hidden;
+        position: relative;
+        font-family: Arial, sans-serif;
+    }
+    #controls {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+    #controls label, #controls select, #controls input, #controls button {
+        margin: 0 5px;
+        font-size: 14px;
+    }
+    #target {
+        width: 50px;
+        height: 50px;
+        background: red;
+        border-radius: 50%;
+        position: absolute;
+        cursor: pointer;
+        display: none;
+    }
+    #status {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 20px;
+        text-align: center;
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div id="controls">
+    <label>モード:</label>
+    <select id="mode">
+        <option value="time">時間制限</option>
+        <option value="count">ターゲット数</option>
+    </select>
+    <label>値:</label>
+    <input type="number" id="value" value="10" min="1">
+    <button id="startButton">スタート</button>
+</div>
+
+<div id="target"></div>
+<div id="status"></div>
+
+<script>
+const startButton = document.getElementById("startButton");
+const target = document.getElementById("target");
+const mode = document.getElementById("mode");
+const valueInput = document.getElementById("value");
+const status = document.getElementById("status");
+
+let hits = 0;
+let misses = 0;
+let startTime = null;
+let timer = null;
+let remaining = 0;
+let targetsTotal = 0;
+let lastSpawnTime = 0;
+
+// ターゲットをランダムに配置
+function moveTarget() {
+    const x = Math.random() * (window.innerWidth - 50);
+    const y = Math.random() * (window.innerHeight - 50);
+    target.style.left = `${x}px`;
+    target.style.top = `${y}px`;
+    target.style.display = "block";
+    lastSpawnTime = performance.now();
+}
+
+// ゲーム終了
+function endGame() {
+    clearInterval(timer);
+    target.style.display = "none";
+    startButton.style.display = "inline-block";
+
+    const totalTime = (performance.now() - startTime) / 1000;
+    const hitRate = (hits / (hits + misses)) * 100;
+    const avgReaction = hits > 0 ? reactionTimes.reduce((a,b)=>a+b,0)/reactionTimes.length : 0;
+
+    status.innerHTML = `
+        <div>終了！</div>
+        <div>命中数: ${hits}</div>
+        <div>命中率: ${hitRate.toFixed(1)}%</div>
+        <div>平均反応速度: ${avgReaction.toFixed(2)} 秒</div>
+        <div>総時間: ${totalTime.toFixed(2)} 秒</div>
+    `;
+    status.style.display = "block";
+    startTime = null;
+}
+
+// 反応時間計測用
+let reactionTimes = [];
+
+// スタートボタン
+startButton.addEventListener("click", () => {
+    hits = 0;
+    misses = 0;
+    reactionTimes = [];
+    status.style.display = "none";
+    startButton.style.display = "none";
+    startTime = performance.now();
+    targetsTotal = parseInt(valueInput.value);
+    remaining = targetsTotal;
+
+    if (mode.value === "time") {
+        let countdown = parseInt(valueInput.value);
+        remaining = countdown;
+        timer = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) endGame();
+        }, 1000);
+    }
+
+    moveTarget();
+});
+
+target.addEventListener("click", (e) => {
+    e.stopPropagation(); // ← 重要
+
+    hits++;
+    const now = performance.now();
+    reactionTimes.push((now - lastSpawnTime)/1000);
+
+    if (mode.value === "count") {
+        remaining--;
+        if (remaining <= 0) {
+            endGame();
+            return;
+        }
+    }
+    moveTarget();
+});
+
+// ターゲット以外をクリックしたらミス(+1) — ターゲットはそのまま残す
+document.addEventListener("click", (e) => {
+    // ゲームが始まっていなければ無視
+    if (!startTime) return;
+
+    // controls 内をクリックした場合はミスにしない
+    const controls = document.getElementById("controls");
+    if (controls && controls.contains(e.target)) return;
+
+    // ターゲットのクリックは stopPropagation() によりここには到達しないので
+    // ここに来たクリックは外し（ミス）とみなす
+    misses++;
+});
+
+
+</script>
+</body>
+</html>
