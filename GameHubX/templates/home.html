@@ -65,6 +65,8 @@
       transform: scale(1.1);
     }
 
+    .game-button.othello { background-image: url("{% static 'images/othello_icon.png' %}"); }
+    
     @media (max-width: 500px) {
       .game-button {
         flex: 1 1 100px;
@@ -91,6 +93,9 @@
     .sidebar h2, .sidebar p {
       text-align: center;
       margin: 6px 0;
+    }
+    p {
+    font-size: 10px; /* htmlの16pxなら 19.2px 相当 */
     }
 
     /* スライドショー */
@@ -202,10 +207,13 @@
   <!-- 左側ゲームボタン -->
   <div class="container">
     <div class="game-buttons">
-    <h1>AI駆動開発に挑戦！</h1>
+    <h1>AI駆動開発に挑戦！</h1><br>
+    <h5>「オセロゲームをdjangoで作って！」という感じで基本的にChatGPTにソースコードを書いてもらっています。<br>
+        もちろん、1発ではうまくいかないので、何回かやり取りしたり、自分で少し微調整もしています。
+    </h5>
       <div class="shinkansen-top-wrapper">
         <div class="shinkansen-top-text">
-          新しく「タイピング」ゲームを追加！
+          新しく「タイピング」と「エイム練習」を追加！
         </div>
       </div>
       <div class="game-buttons-inner">
@@ -224,8 +232,10 @@
 
   <!-- 右側サイドバー -->
   <div class="sidebar">
-    <h2>AIが考えたエンジニアあるある</h2>
-    <p>画像もAI生成です！</p>
+    <h2>AI生成コラム</h2>
+    <p>ChatGPTにエンジニアあるあるの案と画像を作成してもらった4コマ漫画です！<br>
+        下は、Gemini に作ってもらった動画です。映画なんかも一人で作れちゃいますね！
+    </p>
 
     <div class="arrow-container">
       <button id="prev">&lt;</button>
