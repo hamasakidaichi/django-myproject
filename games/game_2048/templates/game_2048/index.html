@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="{% static 'game_2048/css/2048.css' %}">
 </head>
 <body>
+      <div style="margin-bottom: 15px;">
+    <a href="{% url 'home' %}" 
+       style="text-decoration:none; font-size:18px; font-weight:bold; color:white; 
+              background-color:#4c7aaf; padding:8px 16px; border-radius:5px;">
+       ホームへ
+    </a>
+    </div>
     <h1>2048 ゲーム</h1>
     <p>矢印キーで操作して 2048 を目指そう！</p>
     <div id="game-container">

@@ -10,8 +10,11 @@ from games.game_2048.views import game_2048_home
 from games.typing_game.views import typing_game_home
 from games.aim_training.views import aim_training_home
 
+
+
 urlpatterns = [
     path('', views.home, name='home'),  # home ビューを URL に紐づけ
+    path('dev_explain/', views.dev_explain, name='dev_explain'),
     path('ClickRush/', clickrush_home, name='clickrush_home'),
     path('othello/', othello_home, name='othello_home'),
     path('blockbreaker/', blockbreaker_home, name='blockbreaker_home'),

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GameHubX - Home</title>
+  <title>ホーム</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -49,7 +49,7 @@
       max-width: 150px;
       aspect-ratio: 1 / 1;
       background-color: #3498db;
-      color: white;
+      color: rgb(0, 0, 0);
       font-size: 18px;
       text-align: center;
       display: flex;
@@ -60,13 +60,79 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       transition: transform 0.3s;
     }
+    .text-bg {
+  background-color: rgb(252, 252, 250); /* 文字背景色 */
+  padding: 1px 1px;         /* 文字周りの余白 */
+  border-radius: 4px;       /* 角丸にする場合 */
+}
 
     .game-button:hover {
       transform: scale(1.1);
     }
+    .game-button.ClickRush {
+    background-image: url("{% static 'images/ClickRush_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+    justify-content: flex-start; /* 上 */
+    align-items: flex-start;     /* 左 */
+}
+    .game-button.othello {
+    background-image: url("{% static 'images/othello_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+}
 
-    .game-button.othello { background-image: url("{% static 'images/othello_icon.png' %}"); }
-    
+    .game-button.typing {
+    background-image: url("{% static 'images/typing_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+}
+
+    .game-button.aim_training {
+    background-image: url("{% static 'images/aim_training_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+}
+
+    .game-button.game_2048 {
+    background-image: url("{% static 'images/game_2048_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+}
+    .game-button.tetris {
+    background-image: url("{% static 'images/tetris_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+}
+
+.game-button.shooting {
+    background-image: url("{% static 'images/shooting_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+    justify-content: flex-start; /* 上 */
+    align-items: flex-start;     /* 左 */
+}
+    .game-button.blockbreaker {
+    background-image: url("{% static 'images/blockbreaker_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+}    
+.game-button.hitandblow {
+    background-image: url("{% static 'images/hitandblow_icon.png' %}");
+    background-size: cover;       /* ボタン全体に広げる */
+    background-position: center;  /* 中央に配置 */
+    background-repeat: no-repeat; /* 繰り返さない */
+    color: rgb(5, 5, 5);
+}
+
     @media (max-width: 500px) {
       .game-button {
         flex: 1 1 100px;
@@ -211,21 +277,25 @@
     <h5>「オセロゲームをdjangoで作って！」という感じで基本的にChatGPTにソースコードを書いてもらっています。<br>
         もちろん、1発ではうまくいかないので、何回かやり取りしたり、自分で少し微調整もしています。
     </h5>
+
       <div class="shinkansen-top-wrapper">
         <div class="shinkansen-top-text">
           新しく「タイピング」と「エイム練習」を追加！
         </div>
       </div>
+      <div class="dev-link">
+        <a href="/dev_explain/">開発概要はこちら</a>
+      </div>
       <div class="game-buttons-inner">
-        <div class="game-button" onclick="window.location.href='/ClickRush/'">Click連打</div>
-        <div class="game-button" onclick="window.location.href='/othello/'">オセロ</div>
-        <div class="game-button" onclick="window.location.href='/blockbreaker/'">ブロック崩し</div>
-        <div class="game-button" onclick="window.location.href='/shooting/'">シューティングゲーム</div>
-        <div class="game-button" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
-        <div class="game-button" onclick="window.location.href='/tetris/'">テトリス</div>
-        <div class="game-button" onclick="window.location.href='/game_2048/'">2048</div>
-        <div class="game-button" onclick="window.location.href='/typing_game/'">タイピング</div>
-        <div class="game-button" onclick="window.location.href='/aim_training/'">エイム練習</div>
+        <div class="game-button ClickRush" onclick="window.location.href='/ClickRush/'"><span class="text-bg">Click連打</span></div>
+        <div class="game-button othello" onclick="window.location.href='/othello/'"><span class="text-bg">オセロ</span></div>
+        <div class="game-button blockbreaker" onclick="window.location.href='/blockbreaker/'"><span class="text-bg">ブロック崩し</span></div>
+        <div class="game-button shooting" onclick="window.location.href='/shooting/'"><span class="text-bg">シューティング<br>ゲーム</span></div>
+        <div class="game-button hitandblow" onclick="window.location.href='/hitandblow/'">ヒット＆ブロー</div>
+        <div class="game-button tetris" onclick="window.location.href='/tetris/'"><span class="text-bg">テトリス</span></div>
+        <div class="game-button game_2048" onclick="window.location.href='/game_2048/'"><span class="text-bg">2048</span></div>
+        <div class="game-button typing" onclick="window.location.href='/typing_game/'"><span class="text-bg"></span></div>
+        <div class="game-button aim_training" onclick="window.location.href='/aim_training/'"><span class="text-bg">エイム練習</span></div>
       </div>
     </div>
   </div>
@@ -234,7 +304,7 @@
   <div class="sidebar">
     <h2>AI生成コラム</h2>
     <p>ChatGPTにエンジニアあるあるの案と画像を作成してもらった4コマ漫画です！<br>
-        下は、Gemini に作ってもらった動画です。映画なんかも一人で作れちゃいますね！
+        下は、Gemini に作ってもらった動画です。映画なんかも一人で作れちゃいそうですね！
     </p>
 
     <div class="arrow-container">

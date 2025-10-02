@@ -60,7 +60,7 @@ canvas {
 
 <h1>シューティングゲーム</h1>
 <div id="score">スコア: 0</div>
-<canvas id="gameCanvas" width="480" height="320"></canvas>
+<canvas id="gameCanvas" width="400" height="500"></canvas>
 <div id="message"></div>
 <div id="instructions">操作: ← / → キーで移動、スペースキーで発射</div>
 <button id="startBtn">ゲーム開始</button>
@@ -92,7 +92,7 @@ let bulletSpeed = 5;
 let enemies = [];
 let enemyWidth = 40, enemyHeight = 20;
 let enemySpeed = 1;
-let enemySpawnInterval = 2000;
+let enemySpawnInterval = 2000; // 基本は2秒ごとに出現判定
 
 // ゲーム状態
 let score = 0;
@@ -115,11 +115,20 @@ function shootBullet(){
     bullets.push({x:playerX + playerWidth/2 - 2.5, y:canvas.height-playerHeight-10, width:5, height:10});
 }
 
-// 敵生成
+// 敵生成（スコアに応じて確率調整）
 function spawnEnemy(){
     if(!gameStarted || gameOver) return;
-    let x = Math.random() * (canvas.width - enemyWidth);
-    enemies.push({x:x, y:0, width:enemyWidth, height:enemyHeight});
+
+    // スコアに応じて出現確率を変える
+    let spawnRate = 0.2; // 初期（20%）
+    if(score >= 50 && score < 100) spawnRate = 0.4; // 中級（40%）
+    else if(score >= 100) spawnRate = 0.6; // 高スコア時（60%）
+
+    if(Math.random() < spawnRate){
+        let x = Math.random() * (canvas.width - enemyWidth);
+        enemies.push({x:x, y:0, width:enemyWidth, height:enemyHeight});
+    }
+
     setTimeout(spawnEnemy, enemySpawnInterval);
 }
 
@@ -210,7 +219,6 @@ document.getElementById("startBtn").addEventListener("click", () => {
 document.getElementById("retryBtn").addEventListener("click", () => {
     resetGame();
 });
-
 </script>
 </body>
 </html>

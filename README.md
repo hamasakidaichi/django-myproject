@@ -1,5 +1,5 @@
 〇ミニゲーム追加方法
-1. jangoでappの追加。下記コマンドを実行。
+1. djangoでappの追加。下記コマンドを実行。
 cd games
 python ../manage.py startapp ${game_name}
 

@@ -47,7 +47,14 @@
 </style>
 </head>
 <body>
-<div id="controls">
+    <div style="margin-bottom: 15px;">
+<a href="{% url 'home' %}" 
+   style="position:absolute; top:10px; left:50%; transform:translateX(-50%);
+          text-decoration:none; font-size:18px; font-weight:bold; color:white; 
+          background-color:#4c7aaf; padding:8px 16px; border-radius:5px; z-index:20;">
+   ホームへ
+</a></div>
+<div id="controls" style="top:60px;"> <!-- topをホームボタンの下に調整 -->
     <label>モード:</label>
     <select id="mode">
         <option value="time">時間制限</option>
