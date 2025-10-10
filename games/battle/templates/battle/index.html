@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Battle</title>
+    <link rel="stylesheet" href="{% static './battle.css' %}">
+</head>
+<body>
+<div id="battle-field">
+    <!-- CPU（相手）画像 -->
+    <div id="cpu-area">
+        <img id="cpu-monster-img" src="{% static './images/monster2.png' %}" alt="CPU Monster">
+    </div>
+
+    <!-- CPU HP＆情報（左上） -->
+    <div id="cpu-hp-info">
+        <div class="monster-info">
+            <span class="monster-name">ピコポン</span>
+            <span class="monster-gender">♀</span>
+            <span class="monster-level">Lv.15</span>
+        </div>
+        <div class="hp-bar-wrapper">
+            <span class="hp-label">HP</span>
+            <div class="hp-bar"><div class="hp-fill" id="cpu-hp"></div></div>
+            <span class="hp-value" id="cpu-hp-text">100</span>
+        </div>
+    </div>
+
+    <!-- プレイヤー（自分）画像 -->
+    <div id="player-area">
+        <img id="player-monster-img" src="{% static './images/monster1.png' %}" alt="Player Monster">
+    </div>
+
+    <!-- プレイヤー HP＆情報（右下） -->
+    <div id="player-hp-info">
+        <div class="monster-info">
+            <span class="monster-name">ヴァルドラス</span>
+            <span class="monster-gender">♂</span>
+            <span class="monster-level">Lv.12</span>
+        </div>
+        <div class="hp-bar-wrapper">
+            <span class="hp-label">HP</span>
+            <div class="hp-bar"><div class="hp-fill" id="player-hp"></div></div>
+            <span class="hp-value" id="player-hp-text">100</span>
+        </div>
+    </div>
+</div>
+
+
+<div id="skills">
+</div>
+
+<!-- メッセージログ -->
+<div id="log"></div>
+
+<script src="{% static './battle.js' %}"></script>
+</body>
+</html>

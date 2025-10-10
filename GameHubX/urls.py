@@ -9,6 +9,7 @@ from games.tetris.views import tetris_home
 from games.game_2048.views import game_2048_home
 from games.typing_game.views import typing_game_home
 from games.aim_training.views import aim_training_home
+from games.battle.views import battle_home
 
 
 
@@ -24,5 +25,6 @@ urlpatterns = [
     path('game_2048/', game_2048_home, name='game_2048_home'),
     path('typing_game/', typing_game_home, name='typing_game_home'),
     path('aim_training/', aim_training_home, name='aim_training_home'),
+    path('battle/', battle_home, name='battle_home'),
     # ここに新しいゲームのURLを追加していく
 ]

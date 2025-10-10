@@ -1,0 +1,199 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: #e0e8ff;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+/* バトルフィールド */
+#battle-field {
+    position: relative;
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(#a8d0ff, #fff);
+}
+
+/* ================= CPU（相手） ================= */
+#cpu-area {
+    position: absolute;
+    top: 5%;       /* 画面上 */
+    right: 5%;
+}
+
+#cpu-monster-img {
+    width: 180px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* CPU HP & info（左上） */
+#cpu-hp-info {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    text-align: left;
+}
+
+#cpu-hp-info .monster-info {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#cpu-hp-info .hp-bar-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+#cpu-hp-info .hp-label {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+#cpu-hp-info .hp-bar {
+    width: 200px;
+    height: 18px;
+    background: #ccc;
+    border: 2px solid #444;
+    border-radius: 5px;
+}
+
+#cpu-hp-info .hp-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #4caf50, #2e7d32);
+    border-radius: 3px;
+    transition: width 0.5s;
+}
+
+/* ================= プレイヤー（自分） ================= */
+#player-area {
+    position: absolute;
+    bottom: 5%;  /* 画面下 */
+    left: 5%;
+}
+
+#player-monster-img {
+    width: 220px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* プレイヤーHP & info（右下） */
+#player-hp-info {
+    position: absolute;
+    bottom: 5%;
+    right: 5%;
+    text-align: right;
+}
+
+#player-hp-info .monster-info {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#player-hp-info .hp-bar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#player-hp-info .hp-label {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+#player-hp-info .hp-bar {
+    width: 200px;
+    height: 18px;
+    background: #ccc;
+    border: 2px solid #444;
+    border-radius: 5px;
+}
+
+#player-hp-info .hp-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #4caf50, #2e7d32);
+    border-radius: 3px;
+    transition: width 0.5s;
+}
+
+/* ================= 技ボタンエリア ================= */
+#skills {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30%;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border-top: 3px solid #000;
+}
+
+/* プレイヤー技ボタン */
+#skills button:not(#reset-btn) {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #2196F3; /* 青 */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#skills button:not(#reset-btn):hover {
+    background-color: #1976D2; /* ホバー時濃い青 */
+}
+
+/* もう一度戦うボタン */
+#reset-btn {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #4CAF50; /* 緑 */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#reset-btn:hover {
+    background-color: #388E3C; /* ホバー時濃い緑 */
+}
+
+/* ================= メッセージログ ================= */
+#log {
+    position: absolute;
+    bottom: 32%;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #222;
+}
+
+/* ================= 攻撃時の揺れアニメ ================= */
+.shake {
+    animation: shake 0.4s;
+}
+
+.hp-value {
+    margin-left: 8px;
+    font-weight: bold;
+}
+#player-hp-info .hp-value {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    50% { transform: translateX(8px); }
+    75% { transform: translateX(-8px); }
+    100% { transform: translateX(0); }
+}

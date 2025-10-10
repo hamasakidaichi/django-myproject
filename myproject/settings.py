@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'games.game_2048',
     'games.typing_game',
     'games.aim_training',
+    'games.battle',
 ]
 
 MIDDLEWARE = [
